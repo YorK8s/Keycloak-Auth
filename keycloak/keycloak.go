@@ -47,7 +47,11 @@ func (keycloak Keycloak) Login(ctx context.Context, username, password string) (
 func (keycloak Keycloak) DecodeJWT(ctx context.Context, AccessToken string) (*MappingsRepresentation, error) {
 	var tokenString = AccessToken
 
-	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
+	jwtResponse, _, err := keycloak.gocloak.DecodeAccessToken(ctx, tokenString, keycloak.realm)
+	if err != nil {
+		return nil, err
+	}
+	
 	claims := token.Claims.(jwt.MapClaims)
 	if err != nil {
 		return nil, err
